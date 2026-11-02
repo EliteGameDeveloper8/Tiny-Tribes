@@ -21,33 +21,44 @@ input,select{font:inherit;padding:9px;border-radius:8px;border:1px solid var(--m
 .pl{background:var(--card);border-radius:10px;padding:3px 9px;font-size:14px;display:inline-flex;gap:5px;align-items:center}
 .pl.on{outline:2px solid var(--acc)}
 .pl i{width:10px;height:10px;border-radius:50%;display:inline-block}
-#bd{display:grid;grid-template-columns:repeat(9,1fr);gap:2px;margin:10px 0}
-.t{aspect-ratio:1;position:relative;border:0;border-radius:6px;font-size:clamp(14px,5vw,22px);padding:0;line-height:1}
+#bw{position:relative;overflow:auto;max-height:60vh;margin:10px 0;border-radius:8px}#bd{display:grid;gap:1px;width:max-content}
+.t{aspect-ratio:1;position:relative;border:0;border-radius:6px;font-size:inherit;padding:0;line-height:1}
 .Tf{background:var(--fld)}.To{background:var(--frs)}.Tm{background:var(--mtn)}.Tw{background:var(--wat)}
 .mv::after{content:"";position:absolute;inset:32%;border-radius:50%;background:#fff;opacity:.85}
 .at{outline:3px solid #ff2d2d;outline-offset:-3px}
 .sl{outline:3px solid #fff;outline-offset:-3px}
-.u{position:absolute;inset:3px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75em}
+.u{position:absolute;z-index:2;inset:2px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75em}
 .u.dn{opacity:.55}
-.u s{position:absolute;right:-4px;bottom:-5px;font-size:10px;text-decoration:none;background:var(--card);color:var(--fg);border-radius:6px;padding:0 3px;line-height:1.3}
+.u s{position:absolute;right:-3px;bottom:-4px;font-size:8px;text-decoration:none;background:var(--card);color:var(--fg);border-radius:6px;padding:0 3px;line-height:1.3}
 svg{width:1em;height:1em;vertical-align:-.15em;flex:none}
 .t svg{width:68%;height:68%;vertical-align:0}
 .u svg{width:66%;height:66%;vertical-align:0}
 .b svg{width:1.1em;height:1.1em}
+.rs{position:absolute;left:2px;top:2px;width:42%;height:42%;pointer-events:none}.t .rs svg{width:100%;height:100%}
+.lv{font-style:normal;position:absolute;right:2px;bottom:0;font-size:9px;font-weight:700;color:#fff;text-shadow:0 0 3px #000;pointer-events:none}
+.Tc{background:#c5d3dc}.fg{filter:brightness(.72)}
+.rg{box-shadow:inset 0 0 0 1.5px var(--o)}.rg::before{content:"";position:absolute;inset:0;border-radius:6px;background:var(--o);opacity:.2;pointer-events:none}.pk::before{opacity:.45}
 details{font-size:14px;color:var(--mut);margin:8px 0}
+.zb{padding:6px 12px}
+.bh{display:flex;align-items:center;gap:6px;font-weight:600;font-size:14px;margin:12px 0 5px}
+.bi{display:inline-flex;width:22px;height:22px;border-radius:50%;background:var(--acc);align-items:center;justify-content:center}.bi svg{width:70%;height:70%}
+.tt{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tn{position:relative;display:flex;flex-direction:column;gap:2px;text-align:left;font:inherit;font-size:12px;line-height:1.25;padding:6px 7px;border-radius:10px;border:2px solid var(--mut);background:var(--bg);color:var(--fg)}
+.tn b{font-size:13px}.tn.ok{border-color:var(--acc)}.tn.own{background:var(--acc);border-color:var(--acc);color:#fff}.tn.lk{opacity:.45}
+.tn+.tn::before{content:"";position:absolute;left:-10px;top:50%;margin-top:-5px;border:5px solid transparent;border-left:7px solid var(--mut);border-right:0}
 </style></head><body><main>
 <div id="lobby">
 <h1>Tiny Tribes</h1>
 <div class="card"><b>New game</b>
-<div class="row"><input id="gn" placeholder="Game name" maxlength="30"><select id="gp"><option value="2">2 players</option><option value="3">3 players</option><option value="4">4 players</option></select><button class="b" data-a="create">Create</button></div></div>
+<div class="row"><input id="gn" placeholder="Game name" maxlength="30"><select id="gm"><option value="1">Vs bots</option><option value="0">Online</option></select><select id="gp"><option value="2">2 players</option><option value="3">3 players</option><option value="4">4 players</option></select><button class="b" data-a="create">Create</button></div></div>
 <div id="err" class="mut"></div>
 <div id="list"><p class="mut">Loading games…</p></div>
-<details><summary>How to play</summary>Take your turn whenever you like — the game waits for you. When you end your turn, send the short link to the next player. Your game stays saved on this device, so you can leave and come back. Tap one of your units, then a white dot to move or a red tile to attack. Walk onto a village to capture it (+2 stars per village each turn). Tap an empty village of yours to train units. Units heal on your villages and forests give defence. Capture every enemy village to win.</details>
+<details><summary>How to play</summary>Take your turn whenever you like — the game waits for you. When you end your turn, send the short link to the next player. Your game stays saved on this device, so you can leave and come back. Tap one of your units, then a white dot to move or a red tile to attack. Walk onto a village to capture it (+2 stars per village each turn). Tap an empty village of yours to train units. Units heal on your villages and forests give defence. Tap a fruit, animal or fish next to your village to harvest it (2 stars): fed villages level up for more income, a workshop and a defensive wall. Clouds hide unexplored land: your units and villages reveal what is nearby. The tinted tiles around a village show its range. Tap Tech tree to spend stars on four branches of technology (economy, cavalry, defence, warfare) — Riders and Defenders must be researched before you can train them. The map is large: scroll to pan it and use − / + to zoom. Capture every enemy village to win.</details>
 </div>
 <div id="game" hidden></div>
 </main>
 <script>
-const $=s=>document.querySelector(s),W=9,N=81;
+let W=9,N=81;const $=s=>document.querySelector(s);
 const U={W:{e:'⚔️',n:'Warrior',c:2,a:2,d:2,mv:1},R:{e:'🐴',n:'Rider',c:3,a:2,d:1,mv:2},D:{e:'🛡️',n:'Defender',c:3,a:1,d:3,mv:1}};
 const S=(b,c)=>`<svg viewBox="0 0 24 24" style="fill:${c||'#fff'};stroke:rgba(0,0,0,.35);stroke-width:.8">${b}</svg>`;
 const IC={
@@ -57,79 +68,125 @@ D:S('<path d="M12 2.5l8 3v6.5c0 5-3.5 8.2-8 9.5-4.5-1.3-8-4.5-8-9.5V5.5z"/>'),
 star:S('<path d="M12 2.5l2.9 6.2 6.6.8-4.9 4.6 1.3 6.6L12 17.4l-5.9 3.3 1.3-6.6L2.5 9.5l6.6-.8z"/>','#f2b400'),
 H:c=>S('<path d="M2.5 12L12 3.5 21.5 12H19v8H5v-8z"/>',c),
 tree:S('<path d="M12 2l6.5 9.5H15l4.5 6.5h-15L9 11.5H5.5z"/><rect x="10.5" y="18" width="3" height="4"/>','#e6f4dc'),
-mtn:S('<path d="M1.5 20L9 5.5l4.5 8 3-4.5 6 11z"/>','#eeeeea')};
+mtn:S('<path d="M1.5 20L9 5.5l4.5 8 3-4.5 6 11z"/>','#eeeeea'),
+fruit:S('<circle cx="12" cy="14" r="7"/><path d="M12 7c0-2.5 1.5-4 4-4 0 2.5-1.5 4-4 4z"/>','#e8453c'),
+animal:S('<path d="M12 3l7 9-7 9-7-9z"/>','#b9772f'),
+fish:S('<ellipse cx="9.5" cy="12" rx="7.5" ry="5"/><path d="M15 12l7-5.5v11z"/>','#ffffff'),
+cloud:'<svg viewBox="0 0 24 24" style="fill:#fff"><circle cx="8" cy="14" r="4.5"/><circle cx="13" cy="10.5" r="5.5"/><circle cx="17.5" cy="14" r="4"/><rect x="5" y="14" width="15" height="4.5" rx="2.2"/></svg>'};
 U.W.e=IC.W;U.R.e=IC.R;U.D.e=IC.D;
-const CORN=[[1,1],[7,7],[7,1],[1,7]],col=p=>p<0?'var(--mut)':`var(--p${p})`;
+/* tech tree: [branch, icon, [id, name, cost, effect] x3]; each tech needs the one before it */
+const TB=[['Economy','fruit',[['for','Foraging',4,'Harvesting costs 1 star, not 2'],['tra','Trade',8,'+1 star per village each turn'],['cul','Cultivation',12,'Villages level up after 1 less harvest']]],
+['Cavalry','R',[['rid','Riding',4,'Unlocks Riders'],['roa','Roads',8,'Riders move 3 tiles'],['chi','Chivalry',12,'Riders attack +1']]],
+['Defence','D',[['shi','Shields',4,'Unlocks Defenders'],['fort','Fortify',8,'All units defend +1'],['mas','Masonry',12,'Every village gets a city wall (defence x2)']]],
+['Warfare','W',[['bar','Barracks',4,'Units cost 1 star less'],['frg','Forging',8,'All units attack +1'],['con','Conquest',12,'+3 stars for each village captured']]]],TK={};
+TB.forEach(b=>b[2].forEach((t,j)=>TK[t[0]]={n:t[1],c:t[2],d:t[3],pre:j?b[2][j-1][0]:null}));
+const has=(p,t)=>!!(st&&st.k&&st.k[p]&&st.k[p].includes(t)),LK={R:'rid',D:'shi'},canT=(p,k)=>k=='W'||has(p,LK[k]);
+const atk=u=>U[u.k].a+(has(u.o,'frg')?1:0)+(u.k=='R'&&has(u.o,'chi')?1:0),def=u=>U[u.k].d+(has(u.o,'fort')?1:0),mvOf=u=>U[u.k].mv+(u.k=='R'&&has(u.o,'roa')?1:0);
+const tc=(p,k)=>Math.max(1,U[k].c-(has(p,'bar')?1:0)),hc=p=>has(p,'for')?1:2,need=c=>Math.max(1,(c.l||1)+1-(has(c.o,'cul')?1:0));
+const CORN=p=>{const a=1,b=W-2;return[[a,a],[b,b],[b,a],[a,b]][p]},col=p=>p<0?'var(--mut)':`var(--p${p})`;
 const xy=i=>[i%W,i/W|0],ix=(x,y)=>y*W+x;
 const dist=(a,b)=>{const[p,q]=xy(a),[r,s]=xy(b);return Math.max(Math.abs(p-r),Math.abs(q-s))};
 const nb=i=>{const[x,y]=xy(i),o=[];for(let a=-1;a<2;a++)for(let b=-1;b<2;b++){const X=x+a,Y=y+b;if((a||b)&&X>=0&&Y>=0&&X<W&&Y<W)o.push(ix(X,Y))}return o};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>'&#'+c.charCodeAt(0)+';');
 const ago=t=>{const m=(Date.now()-t)/6e4;return m<1?'just now':(m<60?(m|0)+'m':m<1440?(m/60|0)+'h':(m/1440|0)+'d')+' ago'};
-let gid=null,g=null,st=null,sel=null,pick=null,msg='';
+let gid=null,g=null,st=null,sel=null,pick=null,msg='',anim=[],tech=0,ctr=1,ts=(()=>{try{return+localStorage.getItem('ttz')||34}catch(e){return 34}})();
 const uAt=i=>st.u.find(u=>u.i==i),cAt=i=>st.c.find(c=>c.i==i),alive=p=>st.c.some(c=>c.o==p);
-const nm=(d,p)=>p==d.my?'You':'Player '+(p+1);
+const nm=(d,p)=>p==d.my?'You':(d.bots||[]).includes(p)?'Bot '+(p+1):'Player '+(p+1);
 const err=e=>{msg='Error: '+(e&&e.message||e);$('#err').textContent=msg;draw()};
 const rng=a=>()=>{let t=a+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296};
 
-function gen(n,seed){const R=rng(seed),t=[];for(let i=0;i<N;i++){const r=R();t.push(r<.56?'f':r<.76?'o':r<.87?'m':'w')}
+const SZ={2:17,3:19,4:21};
+function gen(n,seed,w){W=w||SZ[n]||17;N=W*W;const R=rng(seed),t=[];for(let i=0;i<N;i++){const r=R();t.push(r<.58?'f':r<.8?'o':r<.9?'m':'w')}
  const c=[],u=[];
- for(let p=0;p<n;p++){const i=ix(...CORN[p]);t[i]='f';nb(i).forEach(j=>t[j]='f');c.push({i,o:p});u.push({i:nb(i)[0],o:p,k:'W',h:10,m:0,d:0})}
- for(let k=0;c.length<n+6&&k<400;k++){const i=R()*N|0;if(t[i]=='f'&&c.every(v=>dist(v.i,i)>2))c.push({i,o:-1})}
- return{t:t.join(''),c,u,s:Array(n).fill(5)}}
+ for(let p=0;p<n;p++){const i=ix(...CORN(p));t[i]='f';nb(i).forEach(j=>t[j]='f');c.push({i,o:p});u.push({i:nb(i)[0],o:p,k:'W',h:10,m:0,d:0})}
+ for(let k=0;c.length<n+Math.round(N/14)&&k<1500;k++){const i=R()*N|0;if(t[i]=='f'&&c.every(v=>dist(v.i,i)>2))c.push({i,o:-1})}
+ const r=t.map((x,i)=>{const q=R();return c.some(v=>v.i==i)?'.':x=='f'&&q<.12?'F':x=='o'&&q<.22?'A':x=='w'&&q<.2?'S':'.'});
+ for(let p=0;p<n;p++){const a=nb(ix(...CORN(p)));r[a[4]]=r[a[6]]='F'}
+ return{t:t.join(''),c,u,s:Array(n).fill(5),r:r.join(''),k:Array.from({length:n},()=>[])}}
 
-function reach(u){const d={[u.i]:0},q=[u.i],mv=U[u.k].mv;
+function reach(u){const d={[u.i]:0},q=[u.i],mv=mvOf(u);
  while(q.length){const a=q.shift();if(d[a]>=mv)continue;const c=cAt(a);if(a!=u.i&&c&&c.o!=u.o)continue;
   for(const b of nb(a))if(!(b in d)&&!'wm'.includes(st.t[b])&&!uAt(b)){d[b]=d[a]+1;q.push(b)}}
  delete d[u.i];return d}
 function check(){const al=[...Array(g.n).keys()].filter(alive);st.u=st.u.filter(u=>alive(u.o));sel=null;if(al.length==1)g.winner=al[0]}
 
 /* game rules: pure state changes, also used to replay a friend's turn */
-function doAtk(a,d){const A=U[a.k],D=U[d.k],af=A.a*a.h/10,df=D.d*d.h/10*(st.t[d.i]=='o'?1.5:1),tot=af+df;
- const dm=Math.round(af/tot*A.a*4.5),bk=Math.round(df/tot*D.d*4.5);let r=`${A.n} hit ${D.n} for ${dm}`;d.h-=dm;
- if(d.h<=0){st.u=st.u.filter(x=>x!==d);r+=' — destroyed!'}else{a.h-=bk;r+=`, took ${bk} back`;if(a.h<=0){st.u=st.u.filter(x=>x!==a);r+=' — and fell!'}}
+function doAtk(a,d){const A=U[a.k],D=U[d.k],aa=atk(a),dd=def(d),af=aa*a.h/10,df=dd*d.h/10*(st.t[d.i]=='o'?1.5:1)*W2(d),tot=af+df;
+ const dm=Math.round(af/tot*aa*4.5),bk=Math.round(df/tot*dd*4.5);let r=`${A.n} hit ${D.n} for ${dm}`;d.h-=dm;const an={k:'at',f:a.i,t:d.i,dm,bk:0,dc:d.o,ac:a.o};anim.push(an);
+ if(d.h<=0){st.u=st.u.filter(x=>x!==d);r+=' — destroyed!';an.kd=1}else{a.h-=bk;an.bk=bk;r+=`, took ${bk} back`;if(a.h<=0){st.u=st.u.filter(x=>x!==a);r+=' — and fell!';an.ka=1}}
  a.m=a.d=1;return r}
-function doMove(u,i){u.i=i;u.m=1;const c=cAt(i);if(c&&c.o!=u.o){c.o=u.o;u.d=1;check();return'Village captured!'}return''}
-function doTrain(k,i,p){st.s[p]-=U[k].c;st.u.push({i,o:p,k,h:10,m:1,d:1})}
+function doMove(u,i){anim.push({k:'mv',f:u.i,t:i});u.i=i;u.m=1;const c=cAt(i);if(c&&c.o!=u.o){const bn=has(u.o,'con')?3:0;st.s[u.o]+=bn;c.o=u.o;c.p=0;u.d=1;anim.push({k:'tx',t:i,x:'Captured'});check();return'Village captured!'+(bn?' +3 stars':'')}return''}
+function doTrain(k,i,p){anim.push({k:'sp',t:i});st.s[p]-=tc(p,k);st.u.push({i,o:p,k,h:10,m:1,d:1})}
 function doEnd(){check();if(g.winner>=0)return;let t=g.turn;do{t=(t+1)%g.n}while(!alive(t));
  if(t<=g.turn)g.day++;g.turn=t;
  st.u.forEach(u=>{if(u.o==t){u.m=u.d=0;const c=cAt(u.i);if(c&&c.o==t)u.h=Math.min(10,u.h+4)}});
- st.s[t]+=2*st.c.filter(c=>c.o==t).length}
+ st.s[t]+=st.c.filter(c=>c.o==t).reduce((a,c)=>a+inc(c),0)}
 function apply(a){const[f,t]=a.slice(1).split('-').map(Number);
- if(a[0]=='m')doMove(uAt(f),t);else if(a[0]=='a')doAtk(uAt(f),uAt(t));else doTrain(a[1],+a.slice(2),g.turn)}
+ if(a[0]=='m')doMove(uAt(f),t);else if(a[0]=='a')doAtk(uAt(f),uAt(t));else if(a[0]=='h')doHarvest(+a.slice(1),g.turn);else if(a[0]=='r')doTech(a.slice(1),g.turn);else doTrain(a[1],+a.slice(2),g.turn)}
+
+/* villages, resources and the bot */
+const inc=c=>1+(c.l||1)+(c.w?1:0)+(has(c.o,'tra')?1:0),W2=d=>{const c=cAt(d.i);return c&&c.o==d.o&&(c.wl||has(c.o,'mas'))?2:1};
+const res=i=>st.r&&st.r[i]&&st.r[i]!='.',hcity=(i,p)=>st.c.find(c=>c.o==p&&dist(c.i,i)<=1);
+const RI={F:IC.fruit,A:IC.animal,S:IC.fish},RN={F:'Fruit',A:'Animal',S:'Fish'};
+function doHarvest(i,p){const c=hcity(i,p),l=c.l||1;anim.push({k:'tx',t:i,x:'+1'});st.s[p]-=hc(p);st.r=st.r.slice(0,i)+'.'+st.r.slice(i+1);c.p=(c.p||0)+1;let m=`Harvested — village growth ${c.p}/${need(c)}`;
+ if(c.p>=need(c)){c.p=0;c.l=l+1;anim.push({k:'tx',t:c.i,x:'Level '+c.l});if(c.l==2){c.w=1;m='Village level 2 — workshop: +1 star per turn'}else if(c.l==3){c.wl=1;m='Village level 3 — city wall: defence x2'}else{st.s[p]+=5;m=`Village level ${c.l} — +5 stars`}}
+ return m}
+function harvest(){const mi=g.my,i=pick;if(g.turn!=mi||g.winner>=0||!res(i)||st.s[mi]<hc(mi)||!hcity(i,mi))return;msg=doHarvest(i,mi);rec('h'+i);pick=null;commit()}
+function doTech(id,p){if(!st.k)st.k=Array.from({length:g.n},()=>[]);st.k[p].push(id);st.s[p]-=TK[id].c;return TK[id].n+' researched — '+TK[id].d}
+function research(id){const mi=g.my,t=TK[id];if(!t||g.turn!=mi||g.winner>=0||has(mi,id)||(t.pre&&!has(mi,t.pre))||st.s[mi]<t.c)return;msg=doTech(id,mi);rec('r'+id);commit()}
+const foes=u=>nb(u.i).map(uAt).filter(e=>e&&e.o!=u.o);
+function botUnit(u){const p=u.o,hit=()=>{const f=foes(u).sort((a,b)=>a.h-b.h)[0];if(f&&!u.d&&(u.h>=4||f.h<=4))doAtk(u,f)};
+ hit();if(u.d||!st.u.includes(u))return;
+ if(!u.m){const goals=[...st.c.filter(c=>c.o!=p).map(c=>c.i),...st.u.filter(e=>e.o!=p).map(e=>e.i)];
+  if(goals.length){const rc=reach(u),dm=x=>Math.min(...goals.map(q=>dist(x,q)));let b=u.i,bd=dm(u.i);
+   for(const k in rc){const d=dm(+k);if(d<bd){bd=d;b=+k}}
+   if(b==u.i&&Math.random()<.4){const ks=Object.keys(rc);if(ks.length)b=+ks[Math.random()*ks.length|0]}
+   if(b!=u.i)doMove(u,b);hit()}}}
+const BP=['for','rid','tra','bar','frg','shi','cul','roa','con','fort','chi','mas'];
+function botTurn(){const p=g.turn,my=()=>st.u.filter(u=>u.o==p),cs=()=>st.c.filter(c=>c.o==p);
+ for(const u of my())if(st.u.includes(u))botUnit(u);
+ const bt=BP.find(t=>!has(p,t)&&(!TK[t].pre||has(p,TK[t].pre)));if(bt&&st.s[p]>=TK[bt].c+2&&my().length>=2)doTech(bt,p);
+ for(const c of cs())if(!uAt(c.i)&&st.s[p]>=tc(p,'W')&&(my().length<cs().length*2+2||st.s[p]>=7)){const q=Math.random();let k='W';if(has(p,'rid')&&st.s[p]>=tc(p,'R')&&q<.35)k='R';else if(has(p,'shi')&&st.s[p]>=tc(p,'D')&&q>.8)k='D';doTrain(k,c.i,p)}
+ for(let i=0;i<N&&st.s[p]>=hc(p);i++)if(res(i)&&hcity(i,p)&&(st.s[p]>=4||my().length>=cs().length*2))doHarvest(i,p)}
 
 /* saving and turn log */
-const mk=(id,name,n,seed)=>({id,name,n,seed,turn:0,day:1,winner:-1,ts:Date.now(),tn:0,my:0,hist:[],cur:[],s:JSON.stringify(gen(n,seed))});
-function use(o){g=o;st=JSON.parse(g.s);gid=g.id;sel=pick=null;msg=''}
-function commit(){g.s=JSON.stringify(st);g.ts=Date.now();try{localStorage.setItem('tt:'+g.id,JSON.stringify(g))}catch(e){}draw()}
+const mk=(id,name,n,seed,bots,w)=>({id,name,n,seed,bots,turn:0,day:1,winner:-1,ts:Date.now(),tn:0,my:0,hist:[],cur:[],s:JSON.stringify(gen(n,seed,w))});
+function use(o){anim.length=0;g=o;st=JSON.parse(g.s);W=Math.round(Math.sqrt(st.t.length));N=W*W;if(!st.k)st.k=Array.from({length:g.n},()=>[]);tech=0;ctr=1;gid=g.id;sel=pick=null;msg=''}
+function reveal(){const v=new Array(N).fill(0);
+ if(g.winner>=0)v.fill(1);else{const sees=(i,r)=>{for(let j=0;j<N;j++)if(dist(i,j)<=r)v[j]=1};
+  st.u.filter(u=>u.o==g.my).forEach(u=>sees(u.i,2));st.c.filter(c=>c.o==g.my).forEach(c=>sees(c.i,2))}
+ if(!g.ex||g.ex.length!=N)g.ex='0'.repeat(N);
+ g.ex=[...g.ex].map((x,i)=>v[i]?'1':x).join('');return v}
+function commit(){reveal();g.s=JSON.stringify(st);g.ts=Date.now();try{localStorage.setItem('tt:'+g.id,JSON.stringify(g))}catch(e){}draw()}
 function flush(){g.hist.push(g.cur);g.cur=[];g.tn++;g.hist=g.hist.slice(-3)}
 function rec(a){g.cur.push(a);if(g.winner>=0)flush()}
-function endTurn(){flush();doEnd();sel=pick=null;msg='';commit()}
+function endTurn(){flush();doEnd();const b=g.bots||[];let k=0;while(b.length&&g.winner<0&&b.includes(g.turn)&&k++<9){botTurn();doEnd()}sel=pick=null;msg=b.length?'The bots have moved.':'';commit()}
 function train(k){const mi=g.my,c=cAt(pick);if(!c||c.o!=mi||uAt(pick)||st.s[mi]<U[k].c)return;
  doTrain(k,pick,mi);rec('t'+k+pick);pick=null;msg=U[k].n+' trained';commit()}
 
-function tap(i){const mi=g.my;if(!(g.turn==mi&&g.winner<0))return;
+function tap(i){const mi=g.my;if(!(g.turn==mi&&g.winner<0)||!(g.ex&&g.ex[i]=='1'))return;
  msg='';const u=uAt(i),su=sel!=null?st.u[sel]:null;
  if(su&&u&&u.o!=mi&&!su.d&&nb(su.i).includes(i)){const f=su.i;msg=doAtk(su,u);rec('a'+f+'-'+i);sel=null;return commit()}
  if(su&&!u&&!su.m&&i in reach(su)){const f=su.i;msg=doMove(su,i);rec('m'+f+'-'+i);sel=su.d||g.winner>=0?null:st.u.indexOf(su);return commit()}
- sel=u&&u.o==mi?st.u.indexOf(u):null;const c=cAt(i);pick=!u&&c&&c.o==mi?i:null;draw()}
+ sel=u&&u.o==mi?st.u.indexOf(u):null;const c=cAt(i);pick=!u&&c&&c.o==mi||res(i)&&hcity(i,mi)?i:null;draw()}
 
 /* short link = game id + seed + only the latest turn(s) */
 const link=()=>{const c=g.hist.slice(-Math.max(1,g.n-1));
- return location.href.split('#')[0]+'#'+[g.id,g.seed,g.n,g.tn-c.length,encodeURIComponent(g.name),c.map(x=>x.join(',')).join('_')].join('~')};
-function join(h){const[id,seed,n,from,name,log]=h.split('~');let o=null;
+ return location.href.split('#')[0]+'#'+[g.id,g.seed,g.n,g.tn-c.length,encodeURIComponent(g.name),c.map(x=>x.join(',')).join('_'),W].join('~')};
+function join(h){const[id,seed,n,from,name,log,sz]=h.split('~');let o=null;
  try{o=JSON.parse(localStorage.getItem('tt:'+id))}catch(e){}
- const fresh=!o;if(fresh)o=mk(id,decodeURIComponent(name),+n,+seed);
+ const fresh=!o;if(fresh)o=mk(id,decodeURIComponent(name),+n,+seed,undefined,+sz||13);
  use(o);
  if(+from>g.tn){if(fresh){gid=null;g=st=null}return err('You’re missing earlier turns — ask for the latest link.')}
  let got=0;(log?log.split('_'):[]).forEach((c,k)=>{if(+from+k>=g.tn){const a=c?c.split(','):[];a.forEach(apply);g.hist.push(a);g.hist=g.hist.slice(-3);g.tn++;doEnd();got++}});
  if(fresh)g.my=g.turn;else if(!got)msg='Already up to date.';
  commit()}
-function create(){const n=+$('#gp').value,id=Math.random().toString(36).slice(2,8);
- use(mk(id,($('#gn').value.trim()||'Game').replace(/[~_,]/g,' '),n,Math.random()*1e9|0));commit()}
+function create(){const n=+$('#gp').value,id=Math.random().toString(36).slice(2,8),bots=$('#gm').value=='1'?[...Array(n).keys()].slice(1):[];
+ use(mk(id,($('#gn').value.trim()||'Game').replace(/[~_,]/g,' '),n,Math.random()*1e9|0,bots));commit()}
 async function copy(){try{await navigator.clipboard.writeText(link());msg='Link copied — send it to the next player.'}catch(e){msg='Copy failed — copy the link from the box.'}draw()}
 function share(){if(navigator.share)navigator.share({title:'Tiny Tribes',text:'Your turn in '+g.name,url:link()}).catch(()=>{});else copy()}
 
-const A={tap:v=>tap(+v),train,end:endTurn,create,copy,share,
+const A={tap:v=>tap(+v),train,harvest,end:endTurn,create,copy,share,tech:()=>{tech=!tech;draw()},res:research,zin:()=>zoom(1),zout:()=>zoom(-1),
  open:id=>{try{use(JSON.parse(localStorage.getItem('tt:'+id)));draw()}catch(e){err(e)}},
  del:id=>{if(confirm('Delete this game from this device?')){localStorage.removeItem('tt:'+id);draw()}},
  back:()=>{gid=null;g=st=null;draw()}};
@@ -137,27 +194,6 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b
 
 function draw(){$('#lobby').hidden=!!gid;$('#game').hidden=!gid;gid?drawGame():drawList()}
 const mine=d=>d.winner<0&&d.turn==d.my?1:0;
-function drawList(){const a=[];try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith('tt:'))a.push(JSON.parse(localStorage.getItem(k)))}}catch(e){}
+function drawList(){anim.length=0;const a=[];try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith('tt:'))a.push(JSON.parse(localStorage.getItem(k)))}}catch(e){}
  a.sort((x,y)=>mine(y)-mine(x)||y.ts-x.ts);
- $('#list').innerHTML=a.length?a.map(d=>`<div class="card"><div class="row"><b>${esc(d.name)}</b>${mine(d)?'<span class="tag">Your turn</span>':''}<span class="mut">#${d.id}</span></div><div class="mut">${d.n} players · day ${d.day} · ${d.winner>=0?nm(d,d.winner)+' won':mine(d)?'your turn':'waiting for Player '+(d.turn+1)} · ${ago(d.ts)}</div><div class="row"><button class="b" data-a="open:${d.id}">Open</button><button class="b" data-a="del:${d.id}" style="background:var(--mut)">Delete</button></div></div>`).join(''):'<p class="mut">No games on this device yet — create one above, or open a link a friend sent you.</p>'}
-
-function drawGame(){const mi=g.my,my=g.turn==mi&&g.winner<0;
- const su=my&&sel!=null?st.u[sel]:null,rc=su&&!su.m?reach(su):{},tg=su&&!su.d?nb(su.i).filter(j=>{const e=uAt(j);return e&&e.o!=su.o}):[];
- let cells='';
- for(let i=0;i<N;i++){const t=st.t[i],c=cAt(i),u=uAt(i);
-  const cl=['t','T'+t,i in rc?'mv':'',tg.includes(i)?'at':'',(su&&su.i==i)||pick==i?'sl':''].join(' ');
-  const ic=u?`<b class="u${my&&u.o==mi&&u.m&&u.d?' dn':''}" style="background:${col(u.o)}">${U[u.k].e}<s>${u.h}</s></b>`:c?IC.H(c.o<0?'#e9e4d0':col(c.o)):t=='o'?IC.tree:t=='m'?IC.mtn:'';
-  cells+=`<button class="${cl}" data-a="tap:${i}"${c&&c.o>=0?` style="box-shadow:inset 0 0 0 3px ${col(c.o)}"`:''}>${ic}</button>`}
- const pl=Array.from({length:g.n},(_,p)=>`<span class="pl${g.turn==p&&g.winner<0?' on':''}"><i style="background:${col(p)}"></i>${nm(g,p)} ${IC.H('currentColor')}${st.c.filter(c=>c.o==p).length}${p==mi?' '+IC.star+st.s[p]:''}</span>`).join(' ');
- const ban=g.winner>=0?`${nm(g,g.winner)} won the game!`:my?`Your turn · day ${g.day}`:`Waiting for Player ${g.turn+1} · last move ${ago(g.ts)}`;
- let info=esc(msg);
- if(su){const s=U[su.k];info=`${s.n} · HP ${su.h}/10 · ${su.d?'done':su.m?'can still attack':'tap a white dot to move or a red tile to attack'}`}
- else if(my&&pick!=null)info='Train a unit: '+Object.entries(U).map(([k,s])=>`<button class="b" data-a="train:${k}"${st.s[mi]<s.c?' disabled':''}>${s.e}${s.n} ${s.c}${IC.star}</button>`).join(' ');
- const shr=!my?`<div class="card"><div class="row"><button class="b" data-a="share">Send link</button><button class="b" data-a="copy">Copy link</button></div><input readonly value="${esc(link())}" onclick="this.select()" style="width:100%"></div>`:'';
- $('#game').innerHTML=`<div class="row"><button class="b" data-a="back">‹ Games</button><b>${esc(g.name)}</b><span class="mut">#${g.id}</span></div><div class="row">${pl}</div><div class="card"><b>${ban}</b></div>${shr}<div id="bd">${cells}</div><div class="mut" style="min-height:44px">${info}</div>${my?'<button class="b" data-a="end">End turn ›</button>':''}`}
-
-function init(){const h=location.hash.slice(1);
- if(h){history.replaceState(null,'',location.pathname+location.search);try{join(h)}catch(e){err('That link is not valid.')}return}
- draw()}
-addEventListener('hashchange',init);init();
-</script></body></html>
+ $('#list').innerHTML=a.length?a.map(d=>`<div class="card"><div class="row"><b>${esc(d.name)}</b>${mine(d)?'<span class="tag">Your turn</span>':''}<span class="mut">#${d.id}</span></div><div class="mut">${d.n} players · day ${d.day} · ${d.winner>=0?nm(d,d.winner)+' won':mine(d)?'your turn':'waiting for Player '+(d.turn+1)} · ${ago(d.ts)}</div><div class="row"><button class="b" data-a="open:${d.id}">Open</button><button class="b" data-a="del:${d.id}" style="background:var(--mut)">Delete</button></div></div>`).join(''):'<p class="mut">No games on this device yet — create one above, or open a l
