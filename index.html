@@ -2,6 +2,7 @@
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Tiny Tribes</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%232f7d4f' d='M2.5 12L12 3.5 21.5 12H19v8H5v-8z'/%3E%3C/svg%3E">
 <style>
 :root{--bg:#f4f1ea;--fg:#1d2a24;--card:#fff;--mut:#6b756f;--acc:#2f7d4f;--fld:#a6d67f;--frs:#78b55f;--mtn:#aaa9a0;--wat:#6bb7e6;--p0:#e0453a;--p1:#3a7be0;--p2:#8a45d6;--p3:#e0a81f;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14191a;--fg:#e8ece9;--card:#1f2727;--mut:#94a09a;--acc:#4fb57a;--fld:#4f7d3c;--frs:#3b6a33;--mtn:#6d6d68;--wat:#2d6590}}
@@ -41,7 +42,7 @@ details{font-size:14px;color:var(--mut);margin:8px 0}
 <div class="row"><input id="gn" placeholder="Game name" maxlength="30"><select id="gp"><option value="2">2 players</option><option value="3">3 players</option><option value="4">4 players</option></select><button class="b" data-a="create">Create</button></div></div>
 <div id="err" class="mut"></div>
 <div id="list"><p class="mut">Loading games…</p></div>
-<details><summary>How to play</summary>Take your turn whenever you like — the game waits for you. Tap one of your units, then a white dot to move or a red tile to attack. Walk onto a village to capture it (+2 stars per village each turn). Tap an empty village of yours to train units. Units heal on your villages and forests give defence. Capture every enemy village to win.</details>
+<details><summary>How to play</summary>Take your turn whenever you like — the game waits for you. When you end your turn, send the link to the next player; it contains the whole game. Tap one of your units, then a white dot to move or a red tile to attack. Walk onto a village to capture it (+2 stars per village each turn). Tap an empty village of yours to train units. Units heal on your villages and forests give defence. Capture every enemy village to win.</details>
 </div>
 <div id="game" hidden></div>
 </main>
@@ -64,7 +65,7 @@ const dist=(a,b)=>{const[p,q]=xy(a),[r,s]=xy(b);return Math.max(Math.abs(p-r),Ma
 const nb=i=>{const[x,y]=xy(i),o=[];for(let a=-1;a<2;a++)for(let b=-1;b<2;b++){const X=x+a,Y=y+b;if((a||b)&&X>=0&&Y>=0&&X<W&&Y<W)o.push(ix(X,Y))}return o};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>'&#'+c.charCodeAt(0)+';');
 const ago=t=>{const m=(Date.now()-t)/6e4;return m<1?'just now':(m<60?(m|0)+'m':m<1440?(m/60|0)+'h':(m/1440|0)+'d')+' ago'};
-let db,user,me,games={},gid=null,g=null,st=null,sel=null,pick=null,msg='',names={};
+let me='you',gid=null,g=null,st=null,sel=null,pick=null,msg='',names={};
 const uAt=i=>st.u.find(u=>u.i==i),cAt=i=>st.c.find(c=>c.i==i),alive=p=>st.c.some(c=>c.o==p);
 const nm=(d,p)=>d.pids[p]==me?'You':names[d.pids[p]]||'Player '+(p+1);
 const err=e=>{msg='Error: '+(e&&e.message||e);$('#err').textContent=msg;draw()};
@@ -82,8 +83,7 @@ function reach(u){const d={[u.i]:0},q=[u.i],mv=U[u.k].mv;
 
 function check(){const al=[...Array(g.n).keys()].filter(alive);st.u=st.u.filter(u=>alive(u.o));sel=null;if(al.length==1)g.winner=al[0]}
 
-async function commit(){g.s=JSON.stringify(st);g.ts=Date.now();draw();
- try{await db.collection('games').doc(gid).update({s:g.s,turn:g.turn,day:g.day,winner:g.winner,ts:g.ts})}catch(e){err(e)}}
+function commit(){g.s=JSON.stringify(st);g.ts=Date.now();try{localStorage.setItem('tt-game',JSON.stringify(g))}catch(e){}draw()}
 
 function attack(a,d){const A=U[a.k],D=U[d.k],af=A.a*a.h/10,df=D.d*d.h/10*(st.t[d.i]=='o'?1.5:1),tot=af+df;
  const dm=Math.round(af/tot*A.a*4.5),bk=Math.round(df/tot*D.d*4.5);
@@ -101,7 +101,7 @@ function endTurn(){check();if(g.winner>=0)return commit();
  let t=g.turn;do{t=(t+1)%g.n}while(!alive(t));
  if(t<=g.turn)g.day++;g.turn=t;
  st.u.forEach(u=>{if(u.o==t){u.m=u.d=0;const c=cAt(u.i);if(c&&c.o==t)u.h=Math.min(10,u.h+4)}});
- st.s[t]+=2*st.c.filter(c=>c.o==t).length;sel=pick=null;msg='';commit()}
+ st.s[t]+=2*st.c.filter(c=>c.o==t).length;sel=pick=null;msg='';g.pids=g.pids.map((_,p)=>'x'+p);commit()}
 
 function tap(i){if(!st)return;const mi=g.pids.indexOf(me);
  if(!(g.pids.length>=g.n&&g.turn==mi&&g.winner<0))return;
@@ -110,22 +110,25 @@ function tap(i){if(!st)return;const mi=g.pids.indexOf(me);
  if(su&&!u&&!su.m&&i in reach(su))return move(su,i);
  sel=u&&u.o==mi?st.u.indexOf(u):null;const c=cAt(i);pick=!u&&c&&c.o==mi?i:null;draw()}
 
-async function create(){const name=$('#gn').value.trim()||'Game',n=+$('#gp').value,id='g'+Date.now().toString(36);
- try{await db.collection('games').doc(id).set({name,n,pids:[me],turn:0,day:1,winner:-1,ts:Date.now(),s:JSON.stringify(gen(n))});open(id)}catch(e){err(e)}}
-async function join(id){const d=games[id];if(!d||d.pids.includes(me)||d.pids.length>=d.n)return;
- try{await db.collection('games').doc(id).update({pids:[...d.pids,me],ts:Date.now()});open(id)}catch(e){err(e)}}
-function open(id){gid=id;g=games[id]||null;st=g?JSON.parse(g.s):null;sel=pick=null;msg='';draw()}
+const enc=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o))));
+const dec=s=>JSON.parse(decodeURIComponent(escape(atob(s))));
+const seat=()=>{g.pids=Array.from({length:g.n},(_,p)=>p==g.turn?me:'x'+p)};
+const link=()=>location.href.split('#')[0]+'#g='+enc({name:g.name,n:g.n,turn:g.turn,day:g.day,winner:g.winner,ts:g.ts,s:g.s});
+function load(o,sit){g=Object.assign({pids:[]},o);st=JSON.parse(g.s);sel=pick=null;msg='';if(sit)seat();gid='local'}
+function create(){const n=+$('#gp').value;load({name:$('#gn').value.trim()||'Game',n,turn:0,day:1,winner:-1,ts:Date.now(),s:JSON.stringify(gen(n))},1);commit()}
+function open(){try{load(JSON.parse(localStorage.getItem('tt-game')));draw()}catch(e){err(e)}}
+function join(){}
+async function copy(){try{await navigator.clipboard.writeText(link());msg='Link copied — send it to the next player.'}catch(e){msg='Copy failed — copy the link from the box.'}draw()}
+function share(){if(navigator.share)navigator.share({title:'Tiny Tribes',text:'Your turn in '+g.name,url:link()}).catch(()=>{});else copy()}
+function here(){seat();draw()}
 
 const A={tap:v=>tap(+v),train,end:endTurn,open,join,create,back:()=>{gid=null;g=st=null;draw()}};
 document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const[a,v]=b.dataset.a.split(':');A[a]&&A[a](v)});
 
 function draw(){$('#lobby').hidden=!!gid;$('#game').hidden=!gid;gid?drawGame():drawList()}
 
-function drawList(){const sc=d=>d.pids.length>=d.n&&d.winner<0&&d.pids.indexOf(me)==d.turn?1:0;
- const ids=Object.keys(games).sort((a,b)=>sc(games[b])-sc(games[a])||games[b].ts-games[a].ts);
- $('#list').innerHTML=ids.length?ids.map(id=>{const d=games[id],mi=d.pids.indexOf(me),full=d.pids.length>=d.n,mine=sc(d);
-  const status=d.winner>=0?nm(d,d.winner)+' won':!full?'waiting for players':mine?'your turn':nm(d,d.turn)+'’s turn';
-  return `<div class="card"><div class="row"><b>${esc(d.name)}</b>${mine?'<span class="tag">Your turn</span>':''}</div><div class="mut">${d.pids.length}/${d.n} players · day ${d.day} · ${status} · ${ago(d.ts)}</div><div class="row">${mi<0&&!full?`<button class="b" data-a="join:${id}">Join</button>`:''}<button class="b" data-a="open:${id}">${mi<0?'View':'Open'}</button></div></div>`}).join(''):'<p class="mut">No games yet — create one above and share this page with a friend.</p>'}
+function drawList(){let o=null;try{o=JSON.parse(localStorage.getItem('tt-game'))}catch(e){}
+ $('#list').innerHTML=o?`<div class="card"><b>${esc(o.name)}</b><div class="mut">${o.n} players · day ${o.day} · ${o.winner>=0?'finished':'turn: Player '+(o.turn+1)} · ${ago(o.ts)}</div><div class="row"><button class="b" data-a="open">Resume</button></div></div>`:'<p class="mut">No game yet — create one above, play your turn, then send the link to the next player.</p>'}
 
 function drawGame(){if(!g||!st){$('#game').innerHTML='<button class="b" data-a="back">‹ Games</button><p>Loading…</p>';return}
  const mi=g.pids.indexOf(me),full=g.pids.length>=g.n,my=full&&g.turn==mi&&g.winner<0;
@@ -140,21 +143,12 @@ function drawGame(){if(!g||!st){$('#game').innerHTML='<button class="b" data-a="
  let info=esc(msg);
  if(su){const s=U[su.k];info=`${s.n} · HP ${su.h}/10 · ${su.d?'done':su.m?'can still attack':'tap a white dot to move or a red tile to attack'}`}
  else if(my&&pick!=null)info='Train a unit: '+Object.entries(U).map(([k,s])=>`<button class="b" data-a="train:${k}"${st.s[mi]<s.c?' disabled':''}>${s.e}${s.n} ${s.c}${IC.star}</button>`).join(' ');
- $('#game').innerHTML=`<div class="row"><button class="b" data-a="back">‹ Games</button><b>${esc(g.name)}</b></div><div class="row">${pl}</div><div class="card"><b>${ban}</b></div>${mi<0&&!full?`<button class="b" data-a="join:${gid}">Join this game</button>`:''}<div id="bd">${cells}</div><div class="mut" style="min-height:44px">${info}</div>${my?'<button class="b" data-a="end">End turn ›</button>':''}`}
+ const shr=full&&!my&&g.winner<0?`<div class="card"><div class="row"><button class="b" data-a="share">Send to ${nm(g,g.turn)}</button><button class="b" data-a="copy">Copy link</button><button class="b" data-a="here">Play next turn here</button></div><input readonly value="${esc(link())}" onclick="this.select()" style="width:100%"></div>`:'';
+ $('#game').innerHTML=`<div class="row"><button class="b" data-a="back">‹ Games</button><b>${esc(g.name)}</b></div><div class="row">${pl}</div><div class="card"><b>${ban}</b></div>${shr}${mi<0&&!full?`<button class="b" data-a="join:${gid}">Join this game</button>`:''}<div id="bd">${cells}</div><div class="mut" style="min-height:44px">${info}</div>${my?'<button class="b" data-a="end">End turn ›</button>':''}`}
 
-async function fetchNames(){const ids=[...new Set(Object.values(games).flatMap(x=>x.pids))].filter(x=>!(x in names));
- if(!ids.length||!user)return;ids.forEach(x=>names[x]='');
- try{const ps=await user.profiles(ids);ids.forEach(x=>names[x]=ps[x]&&ps[x].name||'');draw()}catch(e){}}
-
-(async()=>{
- if(!window.claude){$('#err').textContent='Open this page from claude.ai to play.';return}
- const to=setTimeout(()=>$('#list').textContent='Could not connect. Make sure you’re signed in and have access to this page.',10000);
- user=await claude.use('user');db=await claude.use('db');
- if(!user||!db)return;
- me=await user.id();clearTimeout(to);
- db.collection('games').onSnapshot(s=>{const m={};s.docs.forEach(d=>m[d.id]=d.data());
-  if(g&&gid&&m[gid]&&m[gid].ts<g.ts)m[gid]=g;games=m;
-  if(gid&&m[gid]&&m[gid]!==g){g=m[gid];st=JSON.parse(g.s);if(sel!=null&&!st.u[sel])sel=null}
-  fetchNames();draw()},err);
-})();
+function init(){const m=location.hash.match(/^#g=(.+)$/);
+ if(m){try{load(dec(m[1]),1);commit();history.replaceState(null,'',location.pathname+location.search);return}catch(e){err('That link is not valid.')}}
+ draw()}
+Object.assign(A,{copy,share,here});
+addEventListener('hashchange',init);init();
 </script></body></html>
